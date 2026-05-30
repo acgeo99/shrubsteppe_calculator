@@ -802,25 +802,19 @@ calculate();
           L.geoJSON(geojson, {
             style: feature => {
               const c = feature.properties.class;
-              const strokeColors = {
+              const colors = {
                 'Core Area': '#8B1A1A',
                 'Growth Opportunity Area': '#E07B00',
                 'Corridor': '#2D7A2D',
                 'Other habitat': '#c8b89a'
               };
-              const fillColors = {
-                'Core Area': '#8B1A1A',
-                'Growth Opportunity Area': '#E07B00',
-                'Corridor': 'none',
-                'Other habitat': '#c8b89a'
-              };
-              const isCorridor = c === 'Corridor';
+              const col = colors[c] || '#999';
               return {
-                color: strokeColors[c] || '#999',
-                weight: isCorridor ? 2 : 1.5,
+                color: col,
+                weight: 1.5,
                 opacity: 0.9,
-                fillOpacity: isCorridor ? 0 : 0.25,
-                fillColor: fillColors[c] || '#999'
+                fillOpacity: 0.4,
+                fillColor: col
               };
             }
           }).addTo(map);
