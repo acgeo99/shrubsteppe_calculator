@@ -199,7 +199,7 @@
 
   .summary-grid {
     display: grid;
-    grid-template-columns: 1fr 1px 1fr 1px 1fr;
+    grid-template-columns: 1fr 1px 1fr 1px 1fr 1px 1fr;
     min-height: 80px;
   }
 
@@ -582,6 +582,7 @@ function calculate() {
 
   const balance = credits - debits;
   const ratio = debits > 0 ? credits / debits : 0;
+  const realizedRatio = debits > 0 ? Math.min(credits, debits) / debits : 0;
 
   document.getElementById('impact-priority-display').textContent = `Spatial factor: ${sf_i}`;
   document.getElementById('impact-quality-display').textContent = `Quality factor: ${qf}`;
@@ -602,7 +603,17 @@ function calculate() {
   balEl.textContent = (balance >= 0 ? '+' : '') + fmt(balance);
   balEl.className = 's-value balance ' + (balance >= 0 ? 'balance-positive' : 'balance-negative');
 
-  document.getElementById('sum-ratio').textContent = debits > 0 ? `Ratio: ${fmt(ratio)}:1` : 'No impacts entered';
+  document.getElementById('sum-ratio').textContent = debits > 0 ? 'Balance: ' + (balance >= 0 ? '+' : '') + fmt(balance) : 'No impacts entered';
+  if (debits > 0) {
+    const rrEl = document.getElementById('sum-realized-ratio');
+    rrEl.textContent = fmt(realizedRatio) + ':1';
+    rrEl.style.color = realizedRatio >= 1 ? 'var(--green)' : 'var(--red)';
+    document.getElementById('sum-ratio-sub').textContent = realizedRatio >= 1 ? 'offset requirement met' : fmt(realizedRatio * 100) + '% of offset reached';
+  } else {
+    document.getElementById('sum-realized-ratio').textContent = '—';
+    document.getElementById('sum-realized-ratio').style.color = 'var(--text-muted)';
+    document.getElementById('sum-ratio-sub').textContent = 'credits applied toward offset';
+  }
   document.getElementById('balance-status').textContent = balance >= 0 ? 'SURPLUS' : 'DEFICIT';
 
   highlightDebitMatrix(iQ, iP);
