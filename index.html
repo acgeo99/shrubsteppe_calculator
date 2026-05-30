@@ -348,6 +348,56 @@
     margin-bottom: 24px;
     cursor: crosshair;
   }
+
+  /* Map legend */
+  .map-legend {
+    background: rgba(255,255,255,0.95);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 10px 14px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text);
+    line-height: 1.4;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.2);
+    min-width: 170px;
+  }
+  .legend-title {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 4px;
+  }
+  .legend-swatch {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 2px;
+    opacity: 0.85;
+    flex-shrink: 0;
+    border: 2px solid;
+  }
+  .legend-pin {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    flex-shrink: 0;
+  }
+  .legend-divider {
+    border-top: 1px solid var(--border-light);
+    margin: 7px 0;
+  }
 </style>
   <!-- Leaflet -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -696,6 +746,24 @@ calculate();
       map.fitBounds(e.geocode.bbox);
     })
     .addTo(map);
+
+    // ── Legend ───────────────────────────────────────────
+    const legend = L.control({ position: 'bottomright' });
+    legend.onAdd = function() {
+      const div = L.DomUtil.create('div', 'map-legend');
+      div.innerHTML =
+        '<div class="legend-title">Priority Zones</div>' +
+        '<div class="legend-item"><span class="legend-swatch" style="background:#254B59;border-color:#254B59"></span>Core Area</div>' +
+        '<div class="legend-item"><span class="legend-swatch" style="background:#08BFDD;border-color:#08BFDD"></span>Growth Opportunity Area</div>' +
+        '<div class="legend-item"><span class="legend-swatch" style="background:#8a7055;border-color:#8a7055"></span>Corridor</div>' +
+        '<div class="legend-item"><span class="legend-swatch" style="background:#c8b89a;border-color:#c8b89a"></span>Other Habitat</div>' +
+        '<div class="legend-divider"></div>' +
+        '<div class="legend-title">Pins</div>' +
+        '<div class="legend-item"><span class="legend-pin" style="background:#c4522a"></span>Impact</div>' +
+        '<div class="legend-item"><span class="legend-pin" style="background:#08BFDD"></span>Mitigation</div>';
+      return div;
+    };
+    legend.addTo(map);
 
     // ── State ──────────────────────────────────────────────────
     let mode = 'impact';
