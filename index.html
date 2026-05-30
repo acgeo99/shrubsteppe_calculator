@@ -620,7 +620,7 @@ function calculate() {
     const displayRatio = matrixRatio * realizedRatio;
     rrEl.textContent = fmt(displayRatio) + ':1';
     rrEl.style.color = realizedRatio >= 1 ? 'var(--green)' : 'var(--red)';
-    const reqStr = fmt(matrixRatio) + ':1 required';
+    const reqStr = fmt(matrixRatio) + ':1';
     document.getElementById('sum-ratio-sub').textContent = realizedRatio >= 1 ? 'required ' + reqStr + ' — met' : fmt(realizedRatio * 100) + '% of ' + reqStr;
   } else {
     document.getElementById('sum-realized-ratio').textContent = '—';
