@@ -355,6 +355,8 @@
   <!-- Turf (point-in-polygon) -->
   <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
   <script src="https://unpkg.com/topojson-client@3/dist/topojson-client.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"/>
+  <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 </head>
 <body>
 
@@ -648,6 +650,17 @@ calculate();
       'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
       { attribution: 'Tiles &copy; Esri', maxZoom: 18 }
     ).addTo(map);
+
+    // ── Address search bar ─────────────────────────────────────
+    L.Control.geocoder({
+      defaultMarkGeocode: false,
+      placeholder: 'Search address or place...',
+      geocoder: L.Control.Geocoder.nominatim()
+    })
+    .on('markgeocode', function(e) {
+      map.fitBounds(e.geocode.bbox);
+    })
+    .addTo(map);
 
     // ── State ──────────────────────────────────────────────────
     let mode = 'impact';
