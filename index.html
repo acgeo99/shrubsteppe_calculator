@@ -305,7 +305,55 @@
     header { padding: 20px; }
     .main { padding: 20px 16px 40px; }
   }
+
+  /* Map section */
+  .map-section {
+    max-width: 920px;
+    margin: 32px auto 0;
+    padding: 0 24px;
+  }
+  .map-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    align-items: center;
+  }
+  .map-mode-btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    border-radius: 3px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: var(--white);
+  }
+  .map-mode-btn.impact { color: var(--red); border-color: var(--red); }
+  .map-mode-btn.impact.active { background: var(--red); color: white; }
+  .map-mode-btn.mitigation { color: var(--green); border-color: var(--green); }
+  .map-mode-btn.mitigation.active { background: var(--green); color: white; }
+  .map-status {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-left: 6px;
+  }
+  #map {
+    height: 380px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    margin-bottom: 24px;
+    cursor: crosshair;
+  }
 </style>
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Turf (point-in-polygon) -->
+  <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
 </head>
 <body>
 
@@ -315,7 +363,17 @@
 </header>
 
 <div class="main">
-  <div class="two-col">
+        <!-- MAP SECTION -->
+      <div class="map-section">
+        <div class="map-controls">
+          <button class="map-mode-btn impact active" id="btn-impact" onclick="setMode('impact')">&#128205; Place Impact</button>
+          <button class="map-mode-btn mitigation" id="btn-mitigation" onclick="setMode('mitigation')">&#128205; Place Mitigation</button>
+          <span class="map-status" id="map-status">Click map to set impact location</span>
+        </div>
+        <div id="map"></div>
+      </div>
+
+<div class="two-col">
 
     <!-- IMPACT / DEBIT PANEL -->
     <div class="panel">
@@ -580,5 +638,98 @@ function highlightCreditMatrix(activity, priority) {
 
 calculate();
 </script>
+
+  <script>
+    // ── Map setup ──────────────────────────────────────────────
+    const map = L.map('map').setView([46.23, -119.15], 10);
+
+    L.tileLayer(
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+      { attribution: 'Tiles &copy; Esri', maxZoom: 18 }
+    ).addTo(map);
+
+    // ── State ──────────────────────────────────────────────────
+    let mode = 'impact';
+    let impactMarker = null;
+    let mitigationMarker = null;
+    let priorityData = null;
+
+    // ── Custom pin icons ───────────────────────────────────────
+    const impactIcon = L.divIcon({
+      className: '',
+      html: '<div style="width:14px;height:14px;border-radius:50%;background:#c4522a;border:3px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.5)"></div>',
+      iconSize: [14, 14], iconAnchor: [7, 7]
+    });
+    const mitigationIcon = L.divIcon({
+      className: '',
+      html: '<div style="width:14px;height:14px;border-radius:50%;background:#08BFDD;border:3px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.5)"></div>',
+      iconSize: [14, 14], iconAnchor: [7, 7]
+    });
+
+    // ── Class → dropdown value mapping ────────────────────────
+    const classMap = {
+      'Core Area': 'core',
+      'Growth Opportunity Area': 'goa',
+      'Corridor': 'corridor',
+      'Other habitat': 'other'
+    };
+
+    // ── Load GeoJSON ───────────────────────────────────────────
+    fetch('./data/WSRRI_BAC_.json')
+      .then(r => r.json())
+      .then(data => {
+        priorityData = data;
+        L.geoJSON(data, {
+          style: feature => {
+            const c = feature.properties.class;
+            const colors = {
+              'Core Area': '#254B59',
+              'Growth Opportunity Area': '#08BFDD',
+              'Corridor': '#8a7055',
+              'Other habitat': '#c8b89a'
+            };
+            return { color: colors[c] || '#999', weight: 1.5, opacity: 0.8, fillOpacity: 0.15, fillColor: colors[c] || '#999' };
+          }
+        }).addTo(map);
+      });
+
+    // ── Mode toggle ────────────────────────────────────────────
+    function setMode(m) {
+      mode = m;
+      document.getElementById('btn-impact').classList.toggle('active', m === 'impact');
+      document.getElementById('btn-mitigation').classList.toggle('active', m === 'mitigation');
+      document.getElementById('map-status').textContent =
+        m === 'impact' ? 'Click map to set impact location' : 'Click map to set mitigation location';
+    }
+
+    // ── Map click handler ──────────────────────────────────────
+    map.on('click', function(e) {
+      const pt = turf.point([e.latlng.lng, e.latlng.lat]);
+      let priorityValue = 'other';
+      if (priorityData) {
+        for (const feature of priorityData.features) {
+          if (turf.booleanPointInPolygon(pt, feature)) {
+            priorityValue = classMap[feature.properties.class] || 'other';
+            break;
+          }
+        }
+      }
+      if (mode === 'impact') {
+        if (impactMarker) map.removeLayer(impactMarker);
+        impactMarker = L.marker(e.latlng, { icon: impactIcon }).addTo(map);
+        document.getElementById('impact-priority').value = priorityValue;
+        document.getElementById('impact-priority').dispatchEvent(new Event('change'));
+        calculate();
+        document.getElementById('map-status').textContent = '&#10003; Impact set — now place mitigation or adjust quality';
+      } else {
+        if (mitigationMarker) map.removeLayer(mitigationMarker);
+        mitigationMarker = L.marker(e.latlng, { icon: mitigationIcon }).addTo(map);
+        document.getElementById('mit-priority').value = priorityValue;
+        document.getElementById('mit-priority').dispatchEvent(new Event('change'));
+        calculate();
+        document.getElementById('map-status').textContent = '&#10003; Mitigation set — adjust quality and acres as needed';
+      }
+    });
+  </script>
 </body>
 </html>
