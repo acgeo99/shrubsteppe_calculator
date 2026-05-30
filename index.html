@@ -354,6 +354,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <!-- Turf (point-in-polygon) -->
   <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+  <script src="https://unpkg.com/topojson-client@3/dist/topojson-client.min.js"></script>
 </head>
 <body>
 
@@ -677,9 +678,12 @@ calculate();
     // ── Load GeoJSON ───────────────────────────────────────────
     fetch('./data/WSRRI_BAC_.json')
       .then(r => r.json())
-      .then(data => {
-        priorityData = data;
-        L.geoJSON(data, {
+      .then(topology => {
+        // Convert TopoJSON -> GeoJSON and store for point-in-polygon checks
+        const geojson = topojson.feature(topology, topology.objects.WSRRI_BAC);
+        priorityData = geojson;
+        // Render priority zones on map
+        L.geoJSON(geojson, {
           style: feature => {
             const c = feature.properties.class;
             const colors = {
