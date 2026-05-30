@@ -338,6 +338,22 @@ select:focus, input:focus { border-color: var(--sage); }
   header { padding: 20px; }
   .main { padding: 16px; }
 }
+
+.export-btn {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  background: transparent;
+  color: var(--straw);
+  border: 1px solid rgba(8,191,221,0.5);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.export-btn:hover { background: rgba(8,191,221,0.15); border-color: var(--straw); }
 </style>
 </head>
 <body>
@@ -522,7 +538,10 @@ select:focus, input:focus { border-color: var(--sage); }
   <div class="balance-panel">
     <div class="balance-header">
       <h2>Mitigation Balance Summary</h2>
-      <span class="balance-status" id="balance-status">—</span>
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="balance-status" id="balance-status">—</span>
+        <button class="export-btn" onclick="exportCSV()">&#8659; Export CSV</button>
+      </div>
     </div>
     <div class="balance-grid">
       <div class="balance-cell">
@@ -732,6 +751,59 @@ function updateBalance() {
     rrEl.style.color = 'var(--text-muted)';
     document.getElementById('bal-realized-sub').textContent = 'credits applied toward offset';
   }
+}
+
+function exportCSV() {
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-US', { year:'numeric', month:'2-digit', day:'2-digit' });
+  const rows = [];
+  rows.push(['Shrubsteppe Mitigation Ledger Export']);
+  rows.push(['Exported:', dateStr]);
+  rows.push([]);
+  rows.push(['IMPACT DEBIT LEDGER']);
+  rows.push(['Transaction ID','Jurisdiction','Acres','Spatial Priority','Habitat Quality','Debits']);
+  if (impacts.length === 0) {
+    rows.push(['No impacts entered']);
+  } else {
+    impacts.forEach(r => {
+      rows.push([r.id, r.jurisdiction || '', fmt(r.acres), SPATIAL_LABEL[r.priority], QUALITY_LABEL[r.quality], fmt(r.debits)]);
+    });
+    const tA = impacts.reduce((s,r) => s + r.acres, 0);
+    const tD = impacts.reduce((s,r) => s + r.debits, 0);
+    rows.push(['TOTAL','',fmt(tA),'','',fmt(tD)]);
+  }
+  rows.push([]);
+  rows.push(['MITIGATION BANK CREDIT LEDGER']);
+  rows.push(['Source','Acres','Spatial Priority','Activity','Credits']);
+  if (credits.length === 0) {
+    rows.push(['No credits entered']);
+  } else {
+    credits.forEach(r => {
+      rows.push([r.id, fmt(r.amount), SPATIAL_LABEL[r.priority], ACTIVITY_LABEL[r.activity], fmt(r.creditVal)]);
+    });
+    const tCA = credits.reduce((s,r) => s + r.amount, 0);
+    const tC = credits.reduce((s,r) => s + r.creditVal, 0);
+    rows.push(['TOTAL',fmt(tCA),'','',fmt(tC)]);
+  }
+  rows.push([]);
+  const tD = impacts.reduce((s,r) => s + r.debits, 0);
+  const tC = credits.reduce((s,r) => s + r.creditVal, 0);
+  const bal = tC - tD;
+  const realized = tD > 0 ? Math.min(tC, tD) / tD : 0;
+  rows.push(['BALANCE SUMMARY']);
+  rows.push(['Total Debits', fmt(tD)]);
+  rows.push(['Total Credits', fmt(tC)]);
+  rows.push(['Net Balance', (bal >= 0 ? '+' : '') + fmt(bal)]);
+  rows.push(['Status', tD > 0 ? (bal >= 0 ? 'SURPLUS' : 'DEFICIT') : 'N/A']);
+  rows.push(['Realized Ratio', tD > 0 ? fmt(realized) + ':1' : 'N/A']);
+  const csv = rows.map(r => r.map(c => { const s = String(c).replace(/"/g,'""'); return (s.includes(',') || s.includes('"')) ? '"'+s+'"' : s; }).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'shrubsteppe_ledger_' + now.getFullYear() + ('0'+(now.getMonth()+1)).slice(-2) + ('0'+now.getDate()).slice(-2) + '.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 </script>
 </body>
