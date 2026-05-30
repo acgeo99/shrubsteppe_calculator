@@ -676,26 +676,29 @@ calculate();
     };
 
     // ── Load GeoJSON ───────────────────────────────────────────
-    fetch('./data/WSRRI_BAC_.json')
-      .then(r => r.json())
-      .then(topology => {
-        // Convert TopoJSON -> GeoJSON and store for point-in-polygon checks
-        const geojson = topojson.feature(topology, topology.objects.WSRRI_BAC);
-        priorityData = geojson;
-        // Render priority zones on map
-        L.geoJSON(geojson, {
-          style: feature => {
-            const c = feature.properties.class;
-            const colors = {
-              'Core Area': '#254B59',
-              'Growth Opportunity Area': '#08BFDD',
-              'Corridor': '#8a7055',
-              'Other habitat': '#c8b89a'
-            };
-            return { color: colors[c] || '#999', weight: 1.5, opacity: 0.8, fillOpacity: 0.15, fillColor: colors[c] || '#999' };
-          }
-        }).addTo(map);
-      });
+    // Wait for all scripts then load data
+    function loadPriorityData() {
+      fetch('./data/WSRRI_BAC_.json')
+        .then(r => r.json())
+        .then(topology => {
+          const geojson = topojson.feature(topology, topology.objects.WSRRI_BAC);
+          priorityData = geojson;
+          L.geoJSON(geojson, {
+            style: feature => {
+              const c = feature.properties.class;
+              const colors = {
+                'Core Area': '#254B59',
+                'Growth Opportunity Area': '#08BFDD',
+                'Corridor': '#8a7055',
+                'Other habitat': '#c8b89a'
+              };
+              return { color: colors[c] || '#999', weight: 1.5, opacity: 0.8, fillOpacity: 0.15, fillColor: colors[c] || '#999' };
+            }
+          }).addTo(map);
+        })
+        .catch(e => console.error('Failed to load priority data:', e));
+    }
+    window.addEventListener('load', loadPriorityData);
 
     // ── Mode toggle ────────────────────────────────────────────
     function setMode(m) {
