@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shrubsteppe Mitigation Ledger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --sage: #3a7a8a;
+  --sage-light: #ede5d8;
+  --sage-mid: #c8b89a;
+  --sage-dark: #254B59;
+  --straw: #08BFDD;
+  --straw-light: #f0e8d8;
+  --dust: #8a7055;
+  --text: #0f2530;
+  --text-mid: #2e5060;
+  --text-muted: #6a8a95;
+  --surface: #f5f0e8;
+  --white: #ffffff;
+  --border: #c8b89a;
+  --border-light: #e0d5c5;
+  --red-light: #fdf0ee;
+  --red: #c4522a;
+  --green-light: #f0e8d8;
+  --green: #0a9ab5;
+}
+
+body {
+  font-family: 'IBM Plex Sans', sans-serif;
+  background: var(--surface);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+header {
+  background: var(--sage-dark);
+  color: white;
+  padding: 28px 40px 24px;
+  border-bottom: 3px solid var(--straw);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+header h1 { font-size: 20px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
+header p { font-size: 13px; opacity: 0.65; margin-top: 4px; font-family: 'IBM Plex Mono', monospace; }
+header a {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--straw);
+  text-decoration: none;
+  opacity: 0.8;
+  border: 1px solid rgba(8,191,221,0.4);
+  padding: 4px 10px;
+  border-radius: 3px;
+}
+header a:hover { opacity: 1; }
+
+.main { max-width: 1300px; margin: 0 auto; padding: 28px 24px 60px; }
+
+/* ── Entry Form ─────────────────────────────────────────── */
+.entry-panel {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin-bottom: 28px;
+}
+.entry-header {
+  background: var(--sage-dark);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 4px 4px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.entry-header h2 { font-size: 13px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
+.entry-body { padding: 20px 24px 24px; }
+
+.entry-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.4fr 1.4fr 1fr auto;
+  gap: 16px;
+  align-items: start;
+}
+
+.field label {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+  margin-bottom: 5px;
+}
+
+select, input[type=text], input[type=number] {
+  width: 100%;
+  padding: 9px 12px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+  transition: border-color 0.15s;
+}
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a8a7b' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+  cursor: pointer;
+}
+select:focus, input:focus { border-color: var(--sage); }
+
+.explainer {
+  margin-top: 6px;
+  font-size: 11px;
+  font-family: 'IBM Plex Mono', monospace;
+  color: var(--text-muted);
+  line-height: 1.5;
+  padding: 5px 8px;
+  background: var(--sage-light);
+  border-left: 2px solid var(--sage-mid);
+  border-radius: 0 2px 2px 0;
+}
+
+.add-btn {
+  margin-top: 20px;
+  padding: 10px 22px;
+  background: var(--sage-dark);
+  color: white;
+  border: none;
+  border-radius: 3px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+.add-btn:hover { background: #1a3540; }
+
+/* ── Two-column ledger layout ───────────────────────────── */
+.ledger-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.ledger-panel {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.ledger-panel-header {
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ledger-panel-header.impact-header { background: var(--sage-dark); color: white; }
+.ledger-panel-header.credit-header { background: #1a4a35; color: white; }
+.ledger-panel-header h2 { font-size: 13px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
+
+.panel-tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 2px;
+}
+.tag-debit { background: rgba(196,82,42,0.25); color: #ffb89a; border: 1px solid rgba(196,82,42,0.4); }
+.tag-credit { background: rgba(10,154,181,0.25); color: #7ae6f7; border: 1px solid rgba(10,154,181,0.4); }
+
+/* Ledger tables */
+.ledger-table-wrap { overflow-x: auto; }
+.ledger-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.ledger-table th {
+  background: var(--sage-light);
+  padding: 7px 10px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--sage-dark);
+  border-bottom: 1px solid var(--sage-mid);
+  white-space: nowrap;
+}
+.ledger-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-mid);
+  vertical-align: middle;
+}
+.ledger-table td:first-child { color: var(--text); font-weight: 500; }
+.ledger-table tbody tr:last-child td { border-bottom: none; }
+.ledger-table tbody tr:hover { background: #faf7f2; }
+.ledger-table .debit-val { color: var(--red); font-weight: 500; }
+.ledger-table .credit-val { color: var(--green); font-weight: 500; }
+.ledger-table .total-row td {
+  background: var(--sage-light);
+  font-weight: 500;
+  color: var(--sage-dark);
+  border-top: 2px solid var(--sage-mid);
+}
+.empty-row td {
+  text-align: center;
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 24px 10px;
+}
+.delete-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px 6px;
+  border-radius: 2px;
+  line-height: 1;
+}
+.delete-btn:hover { background: var(--red-light); color: var(--red); }
+
+/* Credit entry in right panel */
+.credit-entry-row {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-light);
+  display: grid;
+  grid-template-columns: 1fr 80px 1fr 1fr auto;
+  gap: 10px;
+  align-items: end;
+}
+.credit-entry-row label {
+  display: block;
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.credit-entry-row input, .credit-entry-row select {
+  font-size: 12px;
+  padding: 7px 10px;
+}
+.add-credit-btn {
+  padding: 8px 14px;
+  background: #1a4a35;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.add-credit-btn:hover { background: #0f3025; }
+
+/* ── Balance Summary ────────────────────────────────────── */
+.balance-panel {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 28px;
+}
+.balance-header {
+  background: var(--sage-dark);
+  color: white;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.balance-header h2 { font-size: 13px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
+.balance-status { font-size: 12px; opacity: 0.7; font-family: 'IBM Plex Mono', monospace; }
+
+.balance-grid {
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr 1px 1fr 1px 1fr;
+  min-height: 80px;
+}
+.balance-divider { background: var(--border-light); }
+.balance-cell { padding: 18px 22px; display: flex; flex-direction: column; justify-content: center; }
+.b-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 6px; font-family: 'IBM Plex Mono', monospace; }
+.b-value { font-size: 24px; font-weight: 300; font-family: 'IBM Plex Mono', monospace; letter-spacing: -0.02em; }
+.b-value.debit { color: var(--red); }
+.b-value.credit { color: var(--green); }
+.b-value.balance { color: var(--sage-dark); font-weight: 500; }
+.balance-positive { color: var(--green) !important; }
+.balance-negative { color: var(--red) !important; }
+.b-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; font-family: 'IBM Plex Mono', monospace; }
+
+/* ── Reference Matrices ─────────────────────────────────── */
+.matrix-wrap { margin-top: 0; }
+.matrix-wrap h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 10px; font-family: 'IBM Plex Mono', monospace; }
+.matrices { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.matrix-table { width: 100%; border-collapse: collapse; font-size: 12px; font-family: 'IBM Plex Mono', monospace; background: var(--white); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+.matrix-table th { background: var(--sage-light); padding: 7px 10px; text-align: center; font-weight: 500; font-size: 11px; color: var(--sage-dark); border-bottom: 1px solid var(--sage-mid); border-right: 1px solid var(--border-light); }
+.matrix-table th:first-child { text-align: left; }
+.matrix-table td { padding: 6px 10px; text-align: center; border-right: 1px solid var(--border-light); border-bottom: 1px solid var(--border-light); color: var(--text-mid); }
+.matrix-table td:first-child { text-align: left; color: var(--text); font-weight: 500; }
+.matrix-table tr:last-child td { border-bottom: none; }
+.matrix-caption { font-size: 11px; font-family: 'IBM Plex Mono', monospace; color: var(--text-muted); text-align: center; margin-top: 6px; }
+
+@media (max-width: 900px) {
+  .ledger-layout { grid-template-columns: 1fr; }
+  .entry-grid { grid-template-columns: 1fr 1fr; }
+  .balance-grid { grid-template-columns: 1fr 1fr; }
+  .balance-divider { display: none; }
+  .matrices { grid-template-columns: 1fr; }
+  header { padding: 20px; }
+  .main { padding: 16px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Shrubsteppe Mitigation Ledger</h1>
+    <p>Project-level impact &amp; credit accounting</p>
+  </div>
+  <a href="index.html">&larr; Back to Calculator</a>
+</header>
+
+<div class="main">
+
+  <!-- IMPACT ENTRY FORM -->
+  <div class="entry-panel">
+    <div class="entry-header">
+      <span class="panel-tag tag-debit">New Impact</span>
+      <h2>Add Impact Transaction</h2>
+    </div>
+    <div class="entry-body">
+      <div class="entry-grid">
+
+        <div class="field">
+          <label>Transaction ID</label>
+          <input type="text" id="entry-id" placeholder="e.g. PRJ-001">
+        </div>
+
+        <div class="field">
+          <label>Impact Acres</label>
+          <input type="number" id="entry-acres" value="" min="0" step="0.1" placeholder="0.0">
+        </div>
+
+        <div class="field">
+          <label>Jurisdiction</label>
+          <select id="entry-jurisdiction">
+            <option value="">— Select —</option>
+            <option value="Richland">Richland</option>
+            <option value="Kennewick">Kennewick</option>
+            <option value="West Richland">West Richland</option>
+            <option value="Prosser">Prosser</option>
+            <option value="Benton City">Benton City</option>
+            <option value="Unincorporated Benton County">Unincorporated Benton County</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Spatial Priority</label>
+          <select id="entry-priority">
+            <option value="core">Core (×4)</option>
+            <option value="goa">GOA (×3)</option>
+            <option value="corridor" selected>Corridor (×2)</option>
+            <option value="other">Other (×1)</option>
+          </select>
+          <div class="explainer">Enter the WSRRI/PHS Spatial Priority class for the impact location. Use the map on the Calculator page to determine the appropriate class.</div>
+        </div>
+
+        <div class="field">
+          <label>Habitat Quality</label>
+          <select id="entry-quality">
+            <option value="high">High (×1.0)</option>
+            <option value="good" selected>Good (×0.75)</option>
+            <option value="moderate">Moderate (×0.5)</option>
+            <option value="poor">Poor (×0.25)</option>
+          </select>
+          <div class="explainer">Enter the shrubsteppe habitat quality rating for the impact site based on field assessment or PHS records.</div>
+        </div>
+
+        <div class="field">
+          <button class="add-btn" onclick="addImpact()">+ Add Impact</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- LEDGER COLUMNS -->
+  <div class="ledger-layout">
+
+    <!-- LEFT: IMPACT LEDGER -->
+    <div class="ledger-panel">
+      <div class="ledger-panel-header impact-header">
+        <span class="panel-tag tag-debit">Impacts</span>
+        <h2>Impact Debit Ledger</h2>
+      </div>
+      <div class="ledger-table-wrap">
+        <table class="ledger-table" id="impact-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Jurisdiction</th>
+              <th>Acres</th>
+              <th>Priority</th>
+              <th>Quality</th>
+              <th>Debits</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="impact-tbody">
+            <tr class="empty-row"><td colspan="7">No impacts entered yet</td></tr>
+          </tbody>
+          <tfoot>
+            <tr class="total-row" id="impact-total-row" style="display:none">
+              <td colspan="2">TOTAL</td>
+              <td id="total-impact-acres">—</td>
+              <td colspan="2"></td>
+              <td id="total-debits" class="debit-val">—</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- RIGHT: CREDIT LEDGER -->
+    <div class="ledger-panel">
+      <div class="ledger-panel-header credit-header">
+        <span class="panel-tag tag-credit">Credits</span>
+        <h2>Mitigation Bank Credit Ledger</h2>
+      </div>
+      <div class="credit-entry-row">
+        <div>
+          <label>Bank / Credit Source</label>
+          <input type="text" id="credit-id" placeholder="e.g. Yakima Delta Bank">
+        </div>
+        <div>
+          <label>Credits</label>
+          <input type="number" id="credit-amount" min="0" step="0.01" placeholder="0.00">
+        </div>
+        <div>
+          <label>Spatial Priority</label>
+          <select id="credit-priority">
+            <option value="core">Core (×4)</option>
+            <option value="goa" selected>GOA (×3)</option>
+            <option value="corridor">Corridor (×2)</option>
+            <option value="other">Other (×1)</option>
+          </select>
+        </div>
+        <div>
+          <label>Activity</label>
+          <select id="credit-activity">
+            <option value="reestablish" selected>Reestablishment (2:1)</option>
+            <option value="restore">Restoration (3:1)</option>
+            <option value="preserve">Preservation (8:1)</option>
+          </select>
+        </div>
+        <div>
+          <button class="add-credit-btn" onclick="addCredit()">+ Add</button>
+        </div>
+      </div>
+      <div class="ledger-table-wrap">
+        <table class="ledger-table" id="credit-table">
+          <thead>
+            <tr>
+              <th>Source</th>
+              <th>Acres</th>
+              <th>Priority</th>
+              <th>Activity</th>
+              <th>Credits</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="credit-tbody">
+            <tr class="empty-row"><td colspan="6">No credits entered yet</td></tr>
+          </tbody>
+          <tfoot>
+            <tr class="total-row" id="credit-total-row" style="display:none">
+              <td>TOTAL</td>
+              <td id="total-credit-acres">—</td>
+              <td colspan="2"></td>
+              <td id="total-credits" class="credit-val">—</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- end ledger-layout -->
+
+  <!-- BALANCE SUMMARY -->
+  <div class="balance-panel">
+    <div class="balance-header">
+      <h2>Mitigation Balance Summary</h2>
+      <span class="balance-status" id="balance-status">—</span>
+    </div>
+    <div class="balance-grid">
+      <div class="balance-cell">
+        <div class="b-label">Total Debits</div>
+        <div class="b-value debit" id="bal-debits">—</div>
+        <div class="b-sub">impact acre-equivalents</div>
+      </div>
+      <div class="balance-divider"></div>
+      <div class="balance-cell">
+        <div class="b-label">Total Credits</div>
+        <div class="b-value credit" id="bal-credits">—</div>
+        <div class="b-sub">mitigation acre-equivalents</div>
+      </div>
+      <div class="balance-divider"></div>
+      <div class="balance-cell">
+        <div class="b-label">Net Balance</div>
+        <div class="b-value balance" id="bal-balance">—</div>
+        <div class="b-sub" id="bal-balance-sub">—</div>
+      </div>
+      <div class="balance-divider"></div>
+      <div class="balance-cell">
+        <div class="b-label">Realized Ratio</div>
+        <div class="b-value" id="bal-realized" style="color:var(--text-muted)">—</div>
+        <div class="b-sub" id="bal-realized-sub">credits applied toward offset</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REFERENCE MATRICES -->
+  <div class="matrix-wrap">
+    <h3>Reference — Lookup Matrices</h3>
+    <div class="matrices">
+      <div>
+        <table class="matrix-table">
+          <thead>
+            <tr><th>Quality / Priority</th><th>Core</th><th>GOA</th><th>Corridor</th><th>Other</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>High</td><td>4.00</td><td>3.00</td><td>2.00</td><td>1.00</td></tr>
+            <tr><td>Good</td><td>3.00</td><td>2.25</td><td>1.50</td><td>0.75</td></tr>
+            <tr><td>Moderate</td><td>2.00</td><td>1.50</td><td>1.00</td><td>0.50</td></tr>
+            <tr><td>Poor</td><td>1.00</td><td>0.75</td><td>0.50</td><td>0.25</td></tr>
+          </tbody>
+        </table>
+        <p class="matrix-caption">Impact debit matrix (per acre)</p>
+      </div>
+      <div>
+        <table class="matrix-table">
+          <thead>
+            <tr><th>Activity / Priority</th><th>Core</th><th>GOA</th><th>Corridor</th><th>Other</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Reestablish</td><td>2.00</td><td>1.50</td><td>1.00</td><td>0.50</td></tr>
+            <tr><td>Restore</td><td>1.33</td><td>1.00</td><td>0.67</td><td>0.33</td></tr>
+            <tr><td>Preserve</td><td>0.50</td><td>0.375</td><td>0.25</td><td>0.125</td></tr>
+          </tbody>
+        </table>
+        <p class="matrix-caption">Mitigation credit matrix (per acre)</p>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end main -->
+
+<script>
+const SPATIAL = { core: 4, goa: 3, corridor: 2, other: 1 };
+const QUALITY = { high: 1.0, good: 0.75, moderate: 0.5, poor: 0.25 };
+const ACTIVITY = { reestablish: 2, restore: 3, preserve: 8 };
+const SPATIAL_LABEL = { core: 'Core', goa: 'GOA', corridor: 'Corridor', other: 'Other' };
+const QUALITY_LABEL = { high: 'High', good: 'Good', moderate: 'Moderate', poor: 'Poor' };
+const ACTIVITY_LABEL = { reestablish: 'Reestablish', restore: 'Restore', preserve: 'Preserve' };
+
+let impacts = [];
+let credits = [];
+
+function fmt(n) { return n.toFixed(2); }
+
+function addImpact() {
+  const id = document.getElementById('entry-id').value.trim() || ('#' + (impacts.length + 1));
+  const acres = parseFloat(document.getElementById('entry-acres').value) || 0;
+  const jurisdiction = document.getElementById('entry-jurisdiction').value;
+  const priority = document.getElementById('entry-priority').value;
+  const quality = document.getElementById('entry-quality').value;
+  if (acres <= 0) { alert('Please enter a valid acreage.'); return; }
+  const debits = acres * SPATIAL[priority] * QUALITY[quality];
+  impacts.push({ id, acres, jurisdiction, priority, quality, debits });
+  document.getElementById('entry-id').value = '';
+  document.getElementById('entry-acres').value = '';
+  document.getElementById('entry-jurisdiction').value = '';
+  renderImpacts();
+  updateBalance();
+}
+
+function removeImpact(i) {
+  impacts.splice(i, 1);
+  renderImpacts();
+  updateBalance();
+}
+
+function renderImpacts() {
+  const tbody = document.getElementById('impact-tbody');
+  if (impacts.length === 0) {
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="7">No impacts entered yet</td></tr>';
+    document.getElementById('impact-total-row').style.display = 'none';
+    return;
+  }
+  let totalAcres = 0, totalDebits = 0;
+  tbody.innerHTML = impacts.map((r, i) => {
+    totalAcres += r.acres;
+    totalDebits += r.debits;
+    return `<tr>
+      <td>${r.id}</td>
+      <td>${r.jurisdiction || '—'}</td>
+      <td>${fmt(r.acres)}</td>
+      <td>${SPATIAL_LABEL[r.priority]}</td>
+      <td>${QUALITY_LABEL[r.quality]}</td>
+      <td class="debit-val">${fmt(r.debits)}</td>
+      <td><button class="delete-btn" onclick="removeImpact(${i})" title="Remove">&times;</button></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('total-impact-acres').textContent = fmt(totalAcres);
+  document.getElementById('total-debits').textContent = fmt(totalDebits);
+  document.getElementById('impact-total-row').style.display = '';
+}
+
+function addCredit() {
+  const id = document.getElementById('credit-id').value.trim() || ('Credit #' + (credits.length + 1));
+  const amount = parseFloat(document.getElementById('credit-amount').value) || 0;
+  const priority = document.getElementById('credit-priority').value;
+  const activity = document.getElementById('credit-activity').value;
+  if (amount <= 0) { alert('Please enter a valid credit amount.'); return; }
+  const creditVal = (amount / ACTIVITY[activity]) * SPATIAL[priority];
+  credits.push({ id, amount, priority, activity, creditVal });
+  document.getElementById('credit-id').value = '';
+  document.getElementById('credit-amount').value = '';
+  renderCredits();
+  updateBalance();
+}
+
+function removeCredit(i) {
+  credits.splice(i, 1);
+  renderCredits();
+  updateBalance();
+}
+
+function renderCredits() {
+  const tbody = document.getElementById('credit-tbody');
+  if (credits.length === 0) {
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="6">No credits entered yet</td></tr>';
+    document.getElementById('credit-total-row').style.display = 'none';
+    return;
+  }
+  let totalAcres = 0, totalCredits = 0;
+  tbody.innerHTML = credits.map((r, i) => {
+    totalAcres += r.amount;
+    totalCredits += r.creditVal;
+    return `<tr>
+      <td>${r.id}</td>
+      <td>${fmt(r.amount)}</td>
+      <td>${SPATIAL_LABEL[r.priority]}</td>
+      <td>${ACTIVITY_LABEL[r.activity]}</td>
+      <td class="credit-val">${fmt(r.creditVal)}</td>
+      <td><button class="delete-btn" onclick="removeCredit(${i})" title="Remove">&times;</button></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('total-credit-acres').textContent = fmt(totalAcres);
+  document.getElementById('total-credits').textContent = fmt(totalCredits);
+  document.getElementById('credit-total-row').style.display = '';
+}
+
+function updateBalance() {
+  const totalDebits = impacts.reduce((s, r) => s + r.debits, 0);
+  const totalCredits = credits.reduce((s, r) => s + r.creditVal, 0);
+  const balance = totalCredits - totalDebits;
+
+  if (impacts.length === 0 && credits.length === 0) {
+    ['bal-debits','bal-credits','bal-balance','bal-realized'].forEach(id => {
+      document.getElementById(id).textContent = '—';
+    });
+    document.getElementById('bal-balance').className = 'b-value balance';
+    document.getElementById('bal-realized').style.color = 'var(--text-muted)';
+    document.getElementById('balance-status').textContent = '—';
+    document.getElementById('bal-balance-sub').textContent = '—';
+    document.getElementById('bal-realized-sub').textContent = 'credits applied toward offset';
+    return;
+  }
+
+  document.getElementById('bal-debits').textContent = fmt(totalDebits);
+  document.getElementById('bal-credits').textContent = fmt(totalCredits);
+
+  const balEl = document.getElementById('bal-balance');
+  balEl.textContent = (balance >= 0 ? '+' : '') + fmt(balance);
+  balEl.className = 'b-value balance ' + (balance >= 0 ? 'balance-positive' : 'balance-negative');
+  document.getElementById('bal-balance-sub').textContent = 'Balance: ' + (balance >= 0 ? '+' : '') + fmt(balance);
+  document.getElementById('balance-status').textContent = totalDebits > 0 ? (balance >= 0 ? 'SURPLUS' : 'DEFICIT') : '—';
+
+  // Realized ratio — based on credits vs debits directly
+  const rrEl = document.getElementById('bal-realized');
+  if (totalDebits > 0) {
+    const realized = Math.min(totalCredits, totalDebits) / totalDebits;
+    rrEl.textContent = fmt(realized) + ':1';
+    rrEl.style.color = realized >= 1 ? 'var(--green)' : 'var(--red)';
+    document.getElementById('bal-realized-sub').textContent =
+      realized >= 1 ? 'offset requirement met' : fmt(realized * 100) + '% of offset reached';
+  } else {
+    rrEl.textContent = '—';
+    rrEl.style.color = 'var(--text-muted)';
+    document.getElementById('bal-realized-sub').textContent = 'credits applied toward offset';
+  }
+}
+</script>
+</body>
+</html>
