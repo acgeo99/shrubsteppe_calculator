@@ -588,7 +588,11 @@ function calculate() {
 
   const balance = credits - debits;
   const ratio = debits > 0 ? credits / debits : 0;
-  const realizedRatio = debits > 0 ? Math.min(credits, debits) / debits : 0;
+  const debitRate = sf_i * qf;
+  const creditRate = sf_m / af;
+  const matrixRatio = creditRate > 0 ? debitRate / creditRate : 0;
+  const requiredMitAcres = matrixRatio * iAcres;
+  const realizedRatio = requiredMitAcres > 0 ? Math.min(mAcres, requiredMitAcres) / requiredMitAcres : 0;
 
   document.getElementById('impact-priority-display').textContent = `Spatial factor: ${sf_i}`;
   document.getElementById('impact-quality-display').textContent = `Quality factor: ${qf}`;
@@ -612,13 +616,16 @@ function calculate() {
   document.getElementById('sum-ratio').textContent = debits > 0 ? 'Balance: ' + (balance >= 0 ? '+' : '') + fmt(balance) : 'No impacts entered';
   if (debits > 0) {
     const rrEl = document.getElementById('sum-realized-ratio');
-    rrEl.textContent = fmt(realizedRatio) + ':1';
+    // Display realized ratio as fraction of required matrix ratio
+    const displayRatio = matrixRatio * realizedRatio;
+    rrEl.textContent = fmt(displayRatio) + ':1';
     rrEl.style.color = realizedRatio >= 1 ? 'var(--green)' : 'var(--red)';
-    document.getElementById('sum-ratio-sub').textContent = realizedRatio >= 1 ? 'offset requirement met' : fmt(realizedRatio * 100) + '% of offset reached';
+    const reqStr = fmt(matrixRatio) + ':1 required';
+    document.getElementById('sum-ratio-sub').textContent = realizedRatio >= 1 ? 'required ' + reqStr + ' — met' : fmt(realizedRatio * 100) + '% of ' + reqStr;
   } else {
     document.getElementById('sum-realized-ratio').textContent = '—';
     document.getElementById('sum-realized-ratio').style.color = 'var(--text-muted)';
-    document.getElementById('sum-ratio-sub').textContent = 'credits applied toward offset';
+    document.getElementById('sum-ratio-sub').textContent = 'matrix-derived required ratio';
   }
   document.getElementById('balance-status').textContent = balance >= 0 ? 'SURPLUS' : 'DEFICIT';
 
