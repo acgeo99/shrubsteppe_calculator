@@ -712,12 +712,19 @@ calculate();
     // ── Map click handler ──────────────────────────────────────
     map.on('click', function(e) {
       const pt = turf.point([e.latlng.lng, e.latlng.lat]);
+      // Priority rank: higher number = higher priority
+      const priorityRank = { 'other': 1, 'corridor': 2, 'goa': 3, 'core': 4 };
       let priorityValue = 'other';
+      let bestRank = 0;
       if (priorityData) {
         for (const feature of priorityData.features) {
           if (turf.booleanPointInPolygon(pt, feature)) {
-            priorityValue = classMap[feature.properties.class] || 'other';
-            break;
+            const val = classMap[feature.properties.class] || 'other';
+            const rank = priorityRank[val] || 0;
+            if (rank > bestRank) {
+              bestRank = rank;
+              priorityValue = val;
+            }
           }
         }
       }
