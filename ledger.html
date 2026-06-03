@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Shrubsteppe Mitigation Ledger</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
   --sage: #3a7a8a;
   --sage-light: #ede5d8;
-  --sage-mid: #c8b89a;
+  --sage-mid: #c8b89a;h
   --sage-dark: #254B59;
   --straw: #08BFDD;
   --straw-light: #f0e8d8;
@@ -31,7 +31,7 @@
 }
 
 body {
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
   background: var(--surface);
   color: var(--text);
   min-height: 100vh;
@@ -49,9 +49,9 @@ header {
   gap: 12px;
 }
 header h1 { font-size: 20px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
-header p { font-size: 13px; opacity: 0.65; margin-top: 4px; font-family: 'IBM Plex Mono', monospace; }
+header p { font-size: 13px; opacity: 0.65; margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
 header a {
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
   color: var(--straw);
   text-decoration: none;
@@ -103,7 +103,7 @@ header a:hover { opacity: 1; }
 select, input[type=text], input[type=number] {
   width: 100%;
   padding: 9px 12px;
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 14px;
   color: var(--text);
   background: var(--surface);
@@ -126,7 +126,7 @@ select:focus, input:focus { border-color: var(--sage); }
 .explainer {
   margin-top: 6px;
   font-size: 11px;
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: 'JetBrains Mono', monospace;
   color: var(--text-muted);
   line-height: 1.5;
   padding: 5px 8px;
@@ -142,7 +142,7 @@ select:focus, input:focus { border-color: var(--sage); }
   color: white;
   border: none;
   border-radius: 3px;
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.06em;
@@ -178,7 +178,7 @@ select:focus, input:focus { border-color: var(--sage); }
 .ledger-panel-header h2 { font-size: 13px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
 
 .panel-tag {
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-size: 10px;
   font-weight: 500;
   letter-spacing: 0.1em;
@@ -195,7 +195,7 @@ select:focus, input:focus { border-color: var(--sage); }
   width: 100%;
   border-collapse: collapse;
   font-size: 12px;
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: 'JetBrains Mono', monospace;
 }
 .ledger-table th {
   background: var(--sage-light);
@@ -272,7 +272,7 @@ select:focus, input:focus { border-color: var(--sage); }
   color: white;
   border: none;
   border-radius: 3px;
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.05em;
@@ -299,7 +299,7 @@ select:focus, input:focus { border-color: var(--sage); }
   justify-content: space-between;
 }
 .balance-header h2 { font-size: 13px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
-.balance-status { font-size: 12px; opacity: 0.7; font-family: 'IBM Plex Mono', monospace; }
+.balance-status { font-size: 12px; opacity: 0.7; font-family: 'JetBrains Mono', monospace; }
 
 .balance-grid {
   display: grid;
@@ -308,26 +308,26 @@ select:focus, input:focus { border-color: var(--sage); }
 }
 .balance-divider { background: var(--border-light); }
 .balance-cell { padding: 18px 22px; display: flex; flex-direction: column; justify-content: center; }
-.b-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 6px; font-family: 'IBM Plex Mono', monospace; }
-.b-value { font-size: 24px; font-weight: 300; font-family: 'IBM Plex Mono', monospace; letter-spacing: -0.02em; }
+.b-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 6px; font-family: 'JetBrains Mono', monospace; }
+.b-value { font-size: 24px; font-weight: 300; font-family: 'JetBrains Mono', monospace; letter-spacing: -0.02em; }
 .b-value.debit { color: var(--red); }
 .b-value.credit { color: var(--green); }
 .b-value.balance { color: var(--sage-dark); font-weight: 500; }
 .balance-positive { color: var(--green) !important; }
 .balance-negative { color: var(--red) !important; }
-.b-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; font-family: 'IBM Plex Mono', monospace; }
+.b-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
 
 /* ── Reference Matrices ─────────────────────────────────── */
 .matrix-wrap { margin-top: 0; }
-.matrix-wrap h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 10px; font-family: 'IBM Plex Mono', monospace; }
+.matrix-wrap h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 10px; font-family: 'JetBrains Mono', monospace; }
 .matrices { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.matrix-table { width: 100%; border-collapse: collapse; font-size: 12px; font-family: 'IBM Plex Mono', monospace; background: var(--white); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+.matrix-table { width: 100%; border-collapse: collapse; font-size: 12px; font-family: 'JetBrains Mono', monospace; background: var(--white); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
 .matrix-table th { background: var(--sage-light); padding: 7px 10px; text-align: center; font-weight: 500; font-size: 11px; color: var(--sage-dark); border-bottom: 1px solid var(--sage-mid); border-right: 1px solid var(--border-light); }
 .matrix-table th:first-child { text-align: left; }
 .matrix-table td { padding: 6px 10px; text-align: center; border-right: 1px solid var(--border-light); border-bottom: 1px solid var(--border-light); color: var(--text-mid); }
 .matrix-table td:first-child { text-align: left; color: var(--text); font-weight: 500; }
 .matrix-table tr:last-child td { border-bottom: none; }
-.matrix-caption { font-size: 11px; font-family: 'IBM Plex Mono', monospace; color: var(--text-muted); text-align: center; margin-top: 6px; }
+.matrix-caption { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--text-muted); text-align: center; margin-top: 6px; }
 
 @media (max-width: 900px) {
   .ledger-layout { grid-template-columns: 1fr; }
@@ -340,7 +340,7 @@ select:focus, input:focus { border-color: var(--sage); }
 }
 
 .export-btn {
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.06em;
