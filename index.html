@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Shrubsteppe Mitigation Calculator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -31,7 +31,7 @@
   }
 
   body {
-    font-family: 'IBM Plex Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     background: var(--surface);
     color: var(--text);
     min-height: 100vh;
@@ -56,7 +56,7 @@
     font-size: 13px;
     opacity: 0.65;
     margin-top: 4px;
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
   }
 
   .main { max-width: 920px; margin: 0 auto; padding: 32px 24px 60px; }
@@ -76,7 +76,7 @@
   }
 
   .panel-tag {
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
     font-size: 10px;
     font-weight: 500;
     letter-spacing: 0.1em;
@@ -107,7 +107,7 @@
   select, input[type=number] {
     width: 100%;
     padding: 9px 12px;
-    font-family: 'IBM Plex Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 14px;
     color: var(--text);
     background: var(--surface);
@@ -125,7 +125,7 @@
 
   .factor-display {
     margin-top: 8px;
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
     font-size: 12px;
     color: var(--text-muted);
     padding: 6px 10px;
@@ -140,7 +140,7 @@
     border-radius: 3px;
     padding: 12px 14px;
     margin: 16px 0 0;
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
     font-size: 12px;
     color: var(--dust);
     line-height: 1.6;
@@ -159,7 +159,7 @@
   }
 
   header a {
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
     color: var(--straw);
     text-decoration: none;
@@ -175,13 +175,13 @@
     text-transform: uppercase;
     letter-spacing: 0.08em;
     opacity: 0.65;
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
   }
 
   .result-value {
     font-size: 28px;
     font-weight: 300;
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
     letter-spacing: -0.02em;
   }
 
@@ -228,13 +228,13 @@
     letter-spacing: 0.08em;
     color: var(--text-muted);
     margin-bottom: 6px;
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
   }
 
   .summary-cell .s-value {
     font-size: 26px;
     font-weight: 300;
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
     letter-spacing: -0.02em;
   }
 
@@ -249,7 +249,7 @@
     font-size: 12px;
     color: var(--text-muted);
     margin-top: 4px;
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
   }
 
   /* Matrix reference table */
@@ -260,7 +260,7 @@
     letter-spacing: 0.1em;
     color: var(--text-muted);
     margin-bottom: 10px;
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
   }
 
   .matrices { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -269,7 +269,7 @@
     width: 100%;
     border-collapse: collapse;
     font-size: 12px;
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
     background: var(--white);
     border: 1px solid var(--border);
     border-radius: 4px;
@@ -303,7 +303,7 @@
 
   .matrix-caption {
     font-size: 11px;
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
     color: var(--text-muted);
     text-align: center;
     margin-top: 6px;
@@ -331,7 +331,7 @@
     align-items: center;
   }
   .map-mode-btn {
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
     font-weight: 500;
     letter-spacing: 0.08em;
@@ -348,7 +348,7 @@
   .map-mode-btn.mitigation { color: var(--green); border-color: var(--green); }
   .map-mode-btn.mitigation.active { background: var(--green); color: white; }
   .map-status {
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
     color: var(--text-muted);
     margin-left: 6px;
@@ -367,7 +367,7 @@
     border: 1px solid var(--border);
     border-radius: 4px;
     padding: 10px 14px;
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
     color: var(--text);
     line-height: 1.4;
@@ -546,7 +546,7 @@
   <div class="summary-panel">
     <div class="summary-header">
       <h2>Mitigation Balance Summary</h2>
-      <span style="font-size:12px; opacity:0.6; font-family:'IBM Plex Mono',monospace;" id="balance-status">SURPLUS</span>
+      <span style="font-size:12px; opacity:0.6; font-family:'JetBrains Mono',monospace;" id="balance-status">SURPLUS</span>
     </div>
     <div class="summary-grid">
       <div class="summary-cell">
